@@ -1,12 +1,19 @@
 <?php
     include_once('connections/connection.php');
-    $con = connection();
+    $connect = connection();
 
                     
     if(isset($_POST['submit'])){  //isset() checks whether the variable is null or not
                         //$_POST refers to all functions which calls the "post"
-        echo "submitted";
+        $fname = $_POST['firstname'];
+        $lname = $_POST['lastname'];
+        $gender = $_POST['gender'];
 
+        $sql_query = "INSERT INTO `student_list`(`first_name`, `last_name`,
+         `gender`) VALUES ('$fname', '$lname', '$gender')";
+        $connect->query($sql_query) or die($connect->error);
+
+        echo header('Location: index.php');
     }
 ?>
 
@@ -21,10 +28,16 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+    <h1>Add a student in the database </h1>
     <form action="" method="post">
+        First name:
         <input type="text" name="firstname" id="search" >
+        Last Name:
         <input type="text" name="lastname" id="search" >
+        <select name="gender" id="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
         <input type="submit" name="submit" value="Submit form">
     </form>
 

@@ -17,9 +17,10 @@ $connect = connection();
 // } else {
 //     echo "Connected";
 // } 
+echo $search = $_GET['search'];
 
 // 3. create mysql querie
-$sql = "SELECT * FROM student_list ORDER BY 'id'";              //create a query
+$sql = "SELECT * FROM student_list WHERE first_name LIKE '%$search%' || last_name LIKE '%$search%' ORDER BY 'id'";              //create a query
 $students = $connect->query($sql) or die($connect->error);     //connect the query and add a try-catch error 
 $row = $students->fetch_assoc();                                //fetch_assoc() returns a row of data
 

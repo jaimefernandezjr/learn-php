@@ -3,6 +3,7 @@
 include_once("connections/connection.php");
 
 $connect = connection();
+
 //1. connect and login to the mysql first
 // $host = "localhost";
 // $username = "root";
@@ -18,8 +19,10 @@ $connect = connection();
 //     echo "Connected";
 // } 
 
+$id = $_GET['ID'];
+
 // 3. create mysql querie
-$sql = "SELECT * FROM student_list ORDER BY 'id'";              //create a query
+$sql = "SELECT * FROM student_list WHERE id='$id'";                            //create a query
 $students = $connect->query($sql) or die($connect->error);     //connect the query and add a try-catch error 
 $row = $students->fetch_assoc();                                //fetch_assoc() returns a row of data
 
@@ -34,11 +37,12 @@ $row = $students->fetch_assoc();                                //fetch_assoc() 
 if(!isset($_SESSION)){                   //$_SESSION- timer of the page. this if-else function checks whether a session is existing
     session_start();
 }
-if(isset($_SESSION['UserLogin'])){      
-    echo "Welcome"." ".$_SESSION['UserLogin'];
+if(isset($_SESSION['Access']) && $_SESSION['Access'] == 'admin'){           //checks if user is the administrator  
+    echo "Welcome"." ".$_SESSION['UserLogin']."<br>";
 } else {
-    echo "Welcome Guest";
+    echo header("Location: index.php");
 }
+
 ?>
 
 <!-- 5. Create an html table and properties-->
@@ -52,46 +56,21 @@ if(isset($_SESSION['UserLogin'])){
     <title>Document</title>
 </head>
 <body>
-    <h1>Student Management System</h1>
-    <br>
-    <br>
-
-    <form action="result.php" method="get">
-        <input type="text" name="search" id="search">
-        <button type="submit">search</button>
+    <h1>Student Information</h1>
+    
+    <form action="delete.php" method="post">
+        <a href="index.php"> <--Back </a><br>
+        <a name="hotdog" href="edit.php?ID=<?php echo $row['id'];?>">Edit |</a>
+        <?php if($_SESSION['Access'] == "admin"){?>
+            <button type="submit" name="delete">Delete</button>
+            <input type="hidden" name='ID' value="<?php echo $row['id'];?>"> 
+        <?php }?>
     </form>
 
 
-    <?php if(isset($_SESSION['UserLogin'])){ ?>
-        <a href="logout.php">Log out</a>
-    <?php } else { ?>
-        <a href="login.php">Log In</a>
-    <?php } ?>
-    <a href="add.php">Add New</a>
-    <!-- outputs a table of first and last names -->
-    <table>
-        <thead>
-            <tr>
-                <th></th>
-                <th>First Name</th>
-                <th>Last Name</th>
-
-            </tr>
-        </thead>
-        <tbody>
-             <!--prints the data on the webpage -->
-            <?php do{ ?>
-            <tr>
-                <td><a href="details.php?ID=<?php echo $row['id']; ?>">View Details</a></td>                <!--display the id on hover-->
-                <td><?php echo $row['first_name'];?></td>
-                <td><?php echo $row['last_name']; ?></td>
-            </tr>
-            <?php }while($row = $students->fetch_assoc()); ?>
-        </tbody>
-    </table>
-</body>
-
-
+    <a href="delete.php">Delete</a>
+    <h2><?php echo $row['first_name'];?> <?php echo $row['last_name'];?></h2>
+    <p>is a <?php echo $row['gender'] ?></p>
 
 <!--6. insert data using html form (go to connections folder) -->
 </html>
